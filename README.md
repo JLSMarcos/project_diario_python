@@ -1,4 +1,5 @@
-#projeto diário
+#Projeto Diário
+#José Marcos de Sousa de Lima
 
 import tkinter as tk
 from tkinter import messagebox, scrolledtext, simpledialog
@@ -101,9 +102,9 @@ def editar_anotacao():
     else:
         messagebox.showinfo("Diário", "O diário está vazio.")
 
-# Interface gráfica
+# Interface
 root = tk.Tk()
-root.title("📘 Diário Eletrônico")
+root.title("Meu Diário de Anotações")
 root.geometry("500x400")
 
 tk.Label(root, text="Escreva sua anotação:", font=("Arial", 12)).pack(pady=10)
