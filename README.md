@@ -1,123 +1,121 @@
-#Projeto Diário
-#José Marcos de Sousa de Lima
+#JOSÉ MARCOS DE SOUSA DE LIMA
 
-import tkinter as tk
-from tkinter import messagebox, scrolledtext, simpledialog
-from datetime import datetime
-import os
+#202308431757
 
+# PROJETO DIÁRIO
+
+
+# Importação dos módulos necessários
+import tkinter as tk  # Módulo principal para criar interfaces gráficas em Python
+from tkinter import messagebox, scrolledtext  # Widgets adicionais do tkinter: caixas de mensagem e campo de texto com rolagem
+from datetime import datetime  # Usado para obter data e hora atual
+import os  # Fornece funções para interagir com o sistema de arquivos
+
+# Constante que define o nome do arquivo onde as anotações serão salvas
 ARQUIVO = "diario.txt"
 
-# Função para salvar anotação
+# Função que salva a anotação digitada pelo usuário
 def salvar_anotacao():
-    texto = entrada_texto.get("1.0", tk.END).strip()
+    # Obtém o conteúdo do campo de texto a partir da posição 1.0 (linha 1, caractere 0) até o final
+    texto = entrada_texto.get("1.0", tk.END).strip()  # strip() remove espaços em branco no início e fim
+    
+    # Verifica se o texto não está vazio
     if texto:
+        # Pega a data e hora atual no formato dia/mês/ano horas:minutos:segundos
+        data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        
+        # Abre o arquivo em modo de adição ('a') e escreve a anotação
+        # encoding='utf-8' garante que caracteres acentuados sejam salvos corretamente
         with open(ARQUIVO, "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] {texto}\n")
+            f.write(f"[{data_hora}] {texto}\n")  # Formato: [data e hora] conteúdo da anotação
+        
+        # Limpa o campo de entrada após salvar
         entrada_texto.delete("1.0", tk.END)
+        
+        # Exibe uma mensagem de sucesso para o usuário
         messagebox.showinfo("Salvo!", "Anotação salva com sucesso!")
+    else:
+        # Exibe um aviso se o campo estiver vazio
+        messagebox.showwarning("Aviso", "A anotação está vazia!")
 
-# Função para mostrar anotações
+# Função para exibir as anotações que estão salvas no arquivo
 def mostrar_anotacoes():
-    if os.path.exists(ARQUIVO):
-        with open(ARQUIVO, "r", encoding="utf-8") as f:
-            conteudo = f.readlines()
-        if conteudo:
-            janela = tk.Toplevel(root)
-            janela.title("Anotações")
-            text_widget = scrolledtext.ScrolledText(janela, width=60, height=15)
-            text_widget.pack(padx=10, pady=10)
-            for i, linha in enumerate(conteudo, 1):
-                text_widget.insert(tk.END, f"{i}. {linha.strip()}\n")
-            text_widget.config(state=tk.DISABLED)
-        else:
-            messagebox.showinfo("Diário", "O diário está vazio.")
-    else:
-        messagebox.showinfo("Diário", "O diário está vazio.")
+    # Verifica se o arquivo existe; se não existir, o diário está vazio
+    if not os.path.exists(ARQUIVO):
+        messagebox.showinfo("Diário", "O diário ainda está vazio.")
+        return
 
-# Função para excluir uma anotação específica
-def excluir_anotacao():
-    if os.path.exists(ARQUIVO):
-        with open(ARQUIVO, "r", encoding="utf-8") as f:
-            linhas = f.readlines()
-        
-        if linhas:
-            janela = tk.Toplevel(root)
-            janela.title("Excluir Anotação")
-            listbox = tk.Listbox(janela, width=60, height=10)
-            for i, linha in enumerate(linhas, 1):
-                listbox.insert(tk.END, f"{i}. {linha.strip()}")
-            listbox.pack(padx=10, pady=10)
-            
-            def excluir_escolhida():
-                try:
-                    selecionada = listbox.curselection()[0]
-                    linhas.pop(selecionada)
-                    with open(ARQUIVO, "w", encoding="utf-8") as f:
-                        f.writelines(linhas)
-                    messagebox.showinfo("Excluído", "Anotação excluída com sucesso!")
-                    janela.destroy()
-                except IndexError:
-                    messagebox.showwarning("Aviso", "Selecione uma anotação para excluir.")
-            
-            tk.Button(janela, text="Excluir", command=excluir_escolhida, bg="salmon").pack(pady=10)
-        else:
-            messagebox.showinfo("Diário", "O diário está vazio.")
-    else:
-        messagebox.showinfo("Diário", "O diário está vazio.")
+    # Lê todo o conteúdo do arquivo
+    with open(ARQUIVO, "r", encoding="utf-8") as f:
+        conteudo = f.read()
 
-# Função para editar uma anotação específica
-def editar_anotacao():
-    if os.path.exists(ARQUIVO):
-        with open(ARQUIVO, "r", encoding="utf-8") as f:
-            linhas = f.readlines()
-        
-        if linhas:
-            janela = tk.Toplevel(root)
-            janela.title("Editar Anotação")
-            listbox = tk.Listbox(janela, width=60, height=10)
-            for i, linha in enumerate(linhas, 1):
-                listbox.insert(tk.END, f"{i}. {linha.strip()}")
-            listbox.pack(padx=10, pady=10)
+    # Cria uma nova janela (janela filha) para mostrar as anotações
+    janela_anotacoes = tk.Toplevel(root)  # Toplevel cria uma nova janela separada da principal
+    janela_anotacoes.title("Anotações Salvas")
+    janela_anotacoes.geometry("600x400")  # Define tamanho da janela
 
-            # Função para editar a anotação selecionada
-            def editar_escolhida():
-                try:
-                    selecionada = listbox.curselection()[0]
-                    nova_anotacao = simpledialog.askstring("Editar Anotação", f"Editar: {linhas[selecionada]}\nDigite o novo texto:")
-                    if nova_anotacao:
-                        linhas[selecionada] = f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] {nova_anotacao}\n"
-                        with open(ARQUIVO, "w", encoding="utf-8") as f:
-                            f.writelines(linhas)
-                        messagebox.showinfo("Editado", "Anotação editada com sucesso!")
-                        janela.destroy()
-                    else:
-                        messagebox.showwarning("Aviso", "O texto da anotação não foi alterado.")
-                except IndexError:
-                    messagebox.showwarning("Aviso", "Selecione uma anotação para editar.")
-            
-            tk.Button(janela, text="Editar", command=editar_escolhida, bg="lightyellow").pack(pady=10)
-        else:
-            messagebox.showinfo("Diário", "O diário está vazio.")
-    else:
-        messagebox.showinfo("Diário", "O diário está vazio.")
+    # Campo de texto com rolagem para exibir o conteúdo do diário
+    texto_anotacoes = scrolledtext.ScrolledText(
+        janela_anotacoes, width=70, height=20, font=("Arial", 10))
+    texto_anotacoes.pack(padx=10, pady=10)
 
-# Interface
-root = tk.Tk()
-root.title("Meu Diário de Anotações")
-root.geometry("500x400")
+    # Insere o conteúdo do arquivo no campo de texto
+    texto_anotacoes.insert(tk.END, conteudo)
+    
+    # Torna o campo de texto apenas leitura (impede edições)
+    texto_anotacoes.config(state=tk.DISABLED)
 
-tk.Label(root, text="Escreva sua anotação:", font=("Arial", 12)).pack(pady=10)
-entrada_texto = scrolledtext.ScrolledText(root, width=60, height=10)
-entrada_texto.pack(pady=5)
+# Função chamada ao clicar no botão "Entrar no Diário"
+def abrir_diario():
+    # Fecha a janela de boas-vindas
+    janela_boas_vindas.destroy()
 
-frame_botoes = tk.Frame(root)
-frame_botoes.pack(pady=10)
+    # Define que essas variáveis poderão ser usadas fora desta função
+    global root, entrada_texto
 
-# Botões
-tk.Button(frame_botoes, text="Salvar", command=salvar_anotacao, bg="lightgreen").pack(side=tk.LEFT, padx=10)
-tk.Button(frame_botoes, text="Ver", command=mostrar_anotacoes, bg="lightblue").pack(side=tk.LEFT, padx=10)
-tk.Button(frame_botoes, text="Excluir", command=excluir_anotacao, bg="salmon").pack(side=tk.LEFT, padx=10)
-tk.Button(frame_botoes, text="Editar", command=editar_anotacao, bg="lightyellow").pack(side=tk.LEFT, padx=10)
+    # Cria a janela principal do diário
+    root = tk.Tk()
+    root.title("📘 Diário Eletrônico")
+    root.geometry("520x420")  # Define tamanho da janela
 
-root.mainloop()
+    # Rótulo que orienta o usuário
+    tk.Label(root, text="Escreva sua anotação:", font=("Arial", 12)).pack(pady=10)
+
+    # Campo de texto com barra de rolagem para entrada da anotação
+    entrada_texto = scrolledtext.ScrolledText(root, width=60, height=10, font=("Arial", 10))
+    entrada_texto.pack(pady=5)
+
+    # Frame (container) para agrupar os botões
+    frame_botoes = tk.Frame(root)
+    frame_botoes.pack(pady=10)
+
+    # Botão para salvar a anotação digitada
+    tk.Button(frame_botoes, text="Salvar Anotação", command=salvar_anotacao,
+              bg="lightgreen", font=("Arial", 10)).pack(side=tk.LEFT, padx=10)
+
+    # Botão para visualizar as anotações já salvas
+    tk.Button(frame_botoes, text="Minhas Anotações", command=mostrar_anotacoes,
+              bg="lightblue", font=("Arial", 10)).pack(side=tk.LEFT, padx=10)
+
+    # Inicia o loop principal da interface gráfica
+    root.mainloop()
+
+# Criação da janela inicial de boas-vindas
+janela_boas_vindas = tk.Tk()
+janela_boas_vindas.title("Bem-vindo")
+janela_boas_vindas.geometry("400x250")  # Define tamanho da janela
+
+# Mensagem de boas-vindas
+tk.Label(janela_boas_vindas, text="Seja Bem-vindo ao seu Diário!",
+         font=("Arial", 14, "bold")).pack(pady=40)
+
+# Subtítulo
+tk.Label(janela_boas_vindas, text="Iniciar anotações",
+         font=("Arial", 14)).pack(pady=10)
+
+# Botão para acessar a tela principal do diário
+tk.Button(janela_boas_vindas, text="Entrar no Diário", font=("Arial", 11),
+          bg="lightblue", command=abrir_diario).pack(pady=20)
+
+# Inicia o loop principal da interface gráfica
+janela_boas_vindas.mainloop()
