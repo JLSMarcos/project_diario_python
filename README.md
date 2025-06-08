@@ -1,6 +1,7 @@
 # PROJETO DIÁRIO
 
 # Importação dos módulos necessários
+
 import tkinter as tk  # Módulo principal para criar interfaces gráficas em Python
 from tkinter import messagebox, scrolledtext  # Widgets adicionais do tkinter: caixas de mensagem e campo de texto com rolagem
 from datetime import datetime  # Usado para obter data e hora atual
