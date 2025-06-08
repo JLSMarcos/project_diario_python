@@ -1,7 +1,3 @@
-#JOSÉ MARCOS DE SOUSA DE LIMA
-
-#202308431757
-
 # PROJETO DIÁRIO
 
 
@@ -79,7 +75,7 @@ def abrir_diario():
     root.geometry("520x420")  # Define tamanho da janela
 
     # Rótulo que orienta o usuário
-    tk.Label(root, text="Escreva sua anotação:", font=("Arial", 12)).pack(pady=10)
+    tk.Label(root, text="Escreva sua anotação:", font=("Arial", 12, "bold")).pack(pady=10)
 
     # Campo de texto com barra de rolagem para entrada da anotação
     entrada_texto = scrolledtext.ScrolledText(root, width=60, height=10, font=("Arial", 10))
@@ -102,6 +98,7 @@ def abrir_diario():
 
 # Criação da janela inicial de boas-vindas
 janela_boas_vindas = tk.Tk()
+janela_boas_vindas.configure(bg="#bbd2f1") # Define a cor de fundo da tela de boas vindas
 janela_boas_vindas.title("Bem-vindo")
 janela_boas_vindas.geometry("400x250")  # Define tamanho da janela
 
@@ -114,7 +111,7 @@ tk.Label(janela_boas_vindas, text="Iniciar anotações",
          font=("Arial", 14)).pack(pady=10)
 
 # Botão para acessar a tela principal do diário
-tk.Button(janela_boas_vindas, text="Entrar no Diário", font=("Arial", 11),
+tk.Button(janela_boas_vindas, text="Entrar no Diário", font=("Arial", 12, "bold"),
           bg="lightblue", command=abrir_diario).pack(pady=20)
 
 # Inicia o loop principal da interface gráfica
